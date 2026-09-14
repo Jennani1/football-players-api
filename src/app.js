@@ -35,4 +35,18 @@ app.get('/api/players', (req, res) => {
   res.status(200).json(players);
 });
 
+app.get('/api/players/:id', (req, res) => {
+  const id = Number(req.params.id);
+
+  const player = players.find(player => player.id === id);
+
+  if (!player) {
+    return res.status(404).json({
+      message: 'Player not found'
+    });
+  }
+
+  res.status(200).json(player);
+});
+
 module.exports = app;
