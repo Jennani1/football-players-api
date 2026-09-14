@@ -1,5 +1,43 @@
 const request = require('supertest');
+const fs = require('fs');
+const path = require('path');
 const app = require('../src/app');
+
+const dataPath = path.join(__dirname, '../data/players.json');
+
+const originalPlayers = [
+  {
+    id: 1,
+    name: 'Alex Johnson',
+    age: 24,
+    position: 'Defender',
+    team: 'Farsta',
+    goals: 3
+  },
+  {
+    id: 2,
+    name: 'Daniel Smith',
+    age: 22,
+    position: 'Midfielder',
+    team: 'Farsta',
+    goals: 5
+  },
+  {
+    id: 3,
+    name: 'Marcus Brown',
+    age: 26,
+    position: 'Forward',
+    team: 'Stockholm FC',
+    goals: 9
+  }
+];
+
+beforeEach(() => {
+  fs.writeFileSync(
+    dataPath,
+    JSON.stringify(originalPlayers, null, 2)
+  );
+});
 
 describe('GET /api/players', () => {
   it('should return a list of players', async () => {
@@ -75,9 +113,11 @@ describe('Filtering and pagination', () => {
       .get('/api/players?position=Defender');
 
     expect(response.status).toBe(200);
-    expect(response.body.every(
-      player => player.position === 'Defender'
-    )).toBe(true);
+    expect(
+      response.body.every(
+        player => player.position === 'Defender'
+      )
+    ).toBe(true);
   });
 
   it('should limit the number of players returned', async () => {

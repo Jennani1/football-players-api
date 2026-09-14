@@ -2,10 +2,13 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { body, validationResult } = require('express-validator');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 const app = express();
 
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const dataPath = path.join(__dirname, '../data/players.json');
 

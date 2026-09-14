@@ -2,10 +2,18 @@
   {
     "id": 1,
     "name": "Alex Johnson",
-    "age": 25,
+    "age": 24,
     "position": "Defender",
     "team": "Farsta",
-    "goals": 4
+    "goals": 3
+  },
+  {
+    "id": 2,
+    "name": "Daniel Smith",
+    "age": 22,
+    "position": "Midfielder",
+    "team": "Farsta",
+    "goals": 5
   },
   {
     "id": 3,
@@ -14,13 +22,5 @@
     "position": "Forward",
     "team": "Stockholm FC",
     "goals": 9
-  },
-  {
-    "id": 4,
-    "name": "Kevin White",
-    "age": 21,
-    "position": "Forward",
-    "team": "Farsta",
-    "goals": 1
   }
 ]
