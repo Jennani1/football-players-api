@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Alex Johnson",
+    "age": 25,
+    "position": "Defender",
+    "team": "Farsta",
+    "goals": 4
+  },
+  {
+    "id": 3,
+    "name": "Marcus Brown",
+    "age": 26,
+    "position": "Forward",
+    "team": "Stockholm FC",
+    "goals": 9
+  },
+  {
+    "id": 4,
+    "name": "Kevin White",
+    "age": 21,
+    "position": "Forward",
+    "team": "Farsta",
+    "goals": 1
+  }
+]
