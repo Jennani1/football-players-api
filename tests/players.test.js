@@ -68,3 +68,35 @@ describe('DELETE /api/players/:id', () => {
     expect(response.body.message).toBe('Player deleted');
   });
 });
+
+describe('Filtering and pagination', () => {
+  it('should filter players by position', async () => {
+    const response = await request(app)
+      .get('/api/players?position=Defender');
+
+    expect(response.status).toBe(200);
+    expect(response.body.every(
+      player => player.position === 'Defender'
+    )).toBe(true);
+  });
+
+  it('should limit the number of players returned', async () => {
+    const response = await request(app)
+      .get('/api/players?page=1&limit=2');
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBeLessThanOrEqual(2);
+  });
+});
+
+describe('Player validation', () => {
+  it('should reject a player with missing fields', async () => {
+    const response = await request(app)
+      .post('/api/players')
+      .send({
+        name: ''
+      });
+
+    expect(response.status).toBe(400);
+  });
+});
