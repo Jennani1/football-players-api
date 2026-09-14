@@ -2,8 +2,37 @@ const express = require('express');
 
 const app = express();
 
+app.use(express.json());
+
+const players = [
+  {
+    id: 1,
+    name: 'Alex Johnson',
+    age: 24,
+    position: 'Defender',
+    team: 'Farsta',
+    goals: 3
+  },
+  {
+    id: 2,
+    name: 'Daniel Smith',
+    age: 22,
+    position: 'Midfielder',
+    team: 'Farsta',
+    goals: 5
+  },
+  {
+    id: 3,
+    name: 'Marcus Brown',
+    age: 26,
+    position: 'Forward',
+    team: 'Stockholm FC',
+    goals: 9
+  }
+];
+
 app.get('/api/players', (req, res) => {
-  res.status(200).json([]);
+  res.status(200).json(players);
 });
 
 module.exports = app;
