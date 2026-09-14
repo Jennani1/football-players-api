@@ -10,3 +10,13 @@ describe('GET /api/players', () => {
     expect(response.body.length).toBeGreaterThan(0);
   });
 });
+
+describe('GET /api/players/:id', () => {
+  it('should return one player by id', async () => {
+    const response = await request(app).get('/api/players/1');
+
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(1);
+    expect(response.body.name).toBe('Alex Johnson');
+  });
+});
