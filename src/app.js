@@ -18,17 +18,42 @@ function readPlayers() {
 }
 
 function writePlayers(players) {
-  fs.writeFileSync(
-    dataPath,
-    JSON.stringify(players, null, 2)
-  );
+  fs.writeFileSync(dataPath, JSON.stringify(players, null, 2));
 }
 
+const playerValidation = [
+  body('name')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('Name is required'),
 
-// GET ALL PLAYERS + FILTERING + PAGINATION
+  body('age')
+    .isInt({ min: 15, max: 60 })
+    .withMessage('Age must be between 15 and 60'),
+
+  body('position')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('Position is required'),
+
+  body('team')
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage('Team is required'),
+
+  body('goals')
+    .isInt({ min: 0 })
+    .withMessage('Goals must be 0 or higher')
+];
+
+
+// GET ALL + FILTERING + PAGINATION
 app.get('/api/players', (req, res) => {
   try {
-    let players = readPlayers();
+    const players = readPlayers();
     let result = [...players];
 
     const { position, team } = req.query;
@@ -47,7 +72,10 @@ app.get('/api/players', (req, res) => {
       );
     }
 
-    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const page = Math.max(
+      parseInt(req.query.page) || 1,
+      1
+    );
 
     const limit = Math.min(
       Math.max(parseInt(req.query.limit) || 10, 1),
@@ -71,11 +99,10 @@ app.get('/api/players', (req, res) => {
 });
 
 
-// GET ONE PLAYER
+// GET ONE
 app.get('/api/players/:id', (req, res) => {
   try {
     const players = readPlayers();
-
     const id = Number(req.params.id);
 
     const player = players.find(
@@ -98,37 +125,10 @@ app.get('/api/players/:id', (req, res) => {
 });
 
 
-// POST PLAYER
+// POST
 app.post(
   '/api/players',
-
-  [
-    body('name')
-      .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Name is required'),
-
-    body('age')
-      .isInt({ min: 15, max: 60 })
-      .withMessage('Age must be between 15 and 60'),
-
-    body('position')
-      .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Position is required'),
-
-    body('team')
-      .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Team is required'),
-
-    body('goals')
-      .isInt({ min: 0 })
-      .withMessage('Goals must be 0 or higher')
-  ],
+  playerValidation,
 
   (req, res) => {
     try {
@@ -157,7 +157,6 @@ app.post(
       };
 
       players.push(newPlayer);
-
       writePlayers(players);
 
       res.status(201).json(newPlayer);
@@ -171,46 +170,57 @@ app.post(
 );
 
 
-// PUT PLAYER
-app.put('/api/players/:id', (req, res) => {
-  try {
-    const players = readPlayers();
+// PUT
+app.put(
+  '/api/players/:id',
+  playerValidation,
 
-    const id = Number(req.params.id);
+  (req, res) => {
+    try {
+      const errors = validationResult(req);
 
-    const player = players.find(
-      player => player.id === id
-    );
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array()
+        });
+      }
 
-    if (!player) {
-      return res.status(404).json({
-        message: 'Player not found'
+      const players = readPlayers();
+      const id = Number(req.params.id);
+
+      const player = players.find(
+        player => player.id === id
+      );
+
+      if (!player) {
+        return res.status(404).json({
+          message: 'Player not found'
+        });
+      }
+
+      player.name = req.body.name;
+      player.age = Number(req.body.age);
+      player.position = req.body.position;
+      player.team = req.body.team;
+      player.goals = Number(req.body.goals);
+
+      writePlayers(players);
+
+      res.status(200).json(player);
+
+    } catch (error) {
+      res.status(500).json({
+        message: 'Could not update player'
       });
     }
-
-    player.name = req.body.name;
-    player.age = req.body.age;
-    player.position = req.body.position;
-    player.team = req.body.team;
-    player.goals = req.body.goals;
-
-    writePlayers(players);
-
-    res.status(200).json(player);
-
-  } catch (error) {
-    res.status(500).json({
-      message: 'Could not update player'
-    });
   }
-});
+);
 
 
-// DELETE PLAYER
+// DELETE
 app.delete('/api/players/:id', (req, res) => {
   try {
     const players = readPlayers();
-
     const id = Number(req.params.id);
 
     const index = players.findIndex(
@@ -224,7 +234,6 @@ app.delete('/api/players/:id', (req, res) => {
     }
 
     players.splice(index, 1);
-
     writePlayers(players);
 
     res.status(200).json({
@@ -237,6 +246,5 @@ app.delete('/api/players/:id', (req, res) => {
     });
   }
 });
-
 
 module.exports = app;
