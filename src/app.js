@@ -49,4 +49,57 @@ app.get('/api/players/:id', (req, res) => {
   res.status(200).json(player);
 });
 
+app.post('/api/players', (req, res) => {
+  const newPlayer = {
+    id: players.length + 1,
+    name: req.body.name,
+    age: req.body.age,
+    position: req.body.position,
+    team: req.body.team,
+    goals: req.body.goals
+  };
+
+  players.push(newPlayer);
+
+  res.status(201).json(newPlayer);
+});
+
+app.put('/api/players/:id', (req, res) => {
+  const id = Number(req.params.id);
+
+  const player = players.find(player => player.id === id);
+
+  if (!player) {
+    return res.status(404).json({
+      message: 'Player not found'
+    });
+  }
+
+  player.name = req.body.name;
+  player.age = req.body.age;
+  player.position = req.body.position;
+  player.team = req.body.team;
+  player.goals = req.body.goals;
+
+  res.status(200).json(player);
+});
+
+app.delete('/api/players/:id', (req, res) => {
+  const id = Number(req.params.id);
+
+  const index = players.findIndex(player => player.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      message: 'Player not found'
+    });
+  }
+
+  players.splice(index, 1);
+
+  res.status(200).json({
+    message: 'Player deleted'
+  });
+});
+
 module.exports = app;
