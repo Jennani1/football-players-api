@@ -98,12 +98,19 @@ describe('PUT /api/players/:id', () => {
 });
 
 describe('DELETE /api/players/:id', () => {
-  it('should delete a player', async () => {
-    const response = await request(app)
+  it('should delete a player and remove it from the system', async () => {
+    const deleteResponse = await request(app)
       .delete('/api/players/2');
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Player deleted');
+    expect(deleteResponse.status).toBe(200);
+    expect(deleteResponse.body.message).toBe('Player deleted');
+
+    // Kontrollera att spelaren verkligen är borttagen
+    const getResponse = await request(app)
+      .get('/api/players/2');
+
+    expect(getResponse.status).toBe(404);
+    expect(getResponse.body.message).toBe('Player not found');
   });
 });
 
@@ -138,5 +145,21 @@ describe('Player validation', () => {
       });
 
     expect(response.status).toBe(400);
+    expect(response.body.errors).toBeDefined();
+  });
+
+  it('should reject a player with invalid input', async () => {
+    const response = await request(app)
+      .post('/api/players')
+      .send({
+        name: 'Test Player',
+        age: 10,
+        position: 'Forward',
+        team: 'Farsta',
+        goals: -5
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.errors).toBeDefined();
   });
 });
